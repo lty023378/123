@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { SIM_LEVELS, SIM_TOOLS, PLACEMENT_RULES } from '../constants';
 import { SimCell, SimEntityType, TerrainType, SimTool } from '../types';
 import { getGameHint, getEntityChat, getDailyNews, NewsData } from '../services/geminiService';
-import { ArrowLeft, Lightbulb, Camera, RotateCcw, Wallet, Newspaper, MessageCircle, Sparkles } from 'lucide-react';
+import { ArrowLeft, Lightbulb, Camera, RotateCcw, Wallet, Newspaper, MessageCircle } from 'lucide-react';
 
 interface EcoSimGameProps {
   onBack: () => void;
@@ -79,22 +79,12 @@ const EcoSimGame: React.FC<EcoSimGameProps> = ({ onBack, onWin }) => {
     setAiMessage(hint);
   };
 
-  const handleEntityClick = async (cell: SimCell) => {
-    // If tool selected, try to apply tool
-    if (selectedTool) {
-        applyTool(cell);
-        return;
-    }
-
-    // Animism Mode: Chat with entity
-    if (cell.entity) {
-        const text = await getEntityChat(SIM_TOOLS.find(t => t.id === cell.entity)?.name || cell.entity);
-        setChatBubble({ cellId: `${cell.row}-${cell.col}`, text });
-        setTimeout(() => setChatBubble(null), 3000);
-    } else {
-        setChatBubble({ cellId: `${cell.row}-${cell.col}`, text: "这里空荡荡的..." });
-        setTimeout(() => setChatBubble(null), 1500);
-    }
+  const getNeighbors = (r: number, c: number) => {
+    return grid.filter(cell => 
+        Math.abs(cell.row - r) <= 1 && 
+        Math.abs(cell.col - c) <= 1 && 
+        !(cell.row === r && cell.col === c)
+    );
   };
 
   const checkPlacementValid = (tool: SimTool, cell: SimCell): { valid: boolean; reason?: string } => {
@@ -134,12 +124,29 @@ const EcoSimGame: React.FC<EcoSimGameProps> = ({ onBack, onWin }) => {
     return { valid: true };
   };
 
-  const getNeighbors = (r: number, c: number) => {
-    return grid.filter(cell => 
-        Math.abs(cell.row - r) <= 1 && 
-        Math.abs(cell.col - c) <= 1 && 
-        !(cell.row === r && cell.col === c)
+  const handleEntityClick = async (cell: SimCell) => {
+    // If tool selected, try to apply tool
+    if (selectedTool) {
+        applyTool(cell);
+        return;
+    }
+
+    // Animism Mode: Chat with entity
+    if (cell.entity) {
+        const text = await getEntityChat(SIM_TOOLS.find(t => t.id === cell.entity)?.name || cell.entity);
+        setChatBubble({ cellId: `${cell.row}-${cell.col}`, text });
+        setTimeout(() => setChatBubble(null), 3000);
+    } else {
+        setChatBubble({ cellId: `${cell.row}-${cell.col}`, text: "这里空荡荡的..." });
+        setTimeout(() => setChatBubble(null), 1500);
+    }
+  };
+
+  const updateCell = (cell: SimCell, newEntity: SimEntityType | null) => {
+    const newGrid = grid.map(c => 
+        (c.row === cell.row && c.col === cell.col) ? { ...c, entity: newEntity } : c
     );
+    setGrid(newGrid);
   };
 
   const applyTool = (cell: SimCell) => {
@@ -216,21 +223,8 @@ const EcoSimGame: React.FC<EcoSimGameProps> = ({ onBack, onWin }) => {
         setTimeout(() => spawnEffect(cell.row, cell.col, "+50分", "score"), 300);
         setAiMessage(`成功种下了${selectedTool.name}`);
     }
-
-    checkMission();
   };
 
-  const updateCell = (cell: SimCell, newEntity: SimEntityType | null) => {
-    const newGrid = grid.map(c => 
-        (c.row === cell.row && c.col === cell.col) ? { ...c, entity: newEntity } : c
-    );
-    setGrid(newGrid);
-  };
-
-  const checkMission = () => {
-    setTimeout(async () => {}, 100);
-  };
-  
   // Effect to check win condition on grid change
   useEffect(() => {
     const checkWin = async () => {
