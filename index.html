@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>熊畈村：湿地大冒险</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&display=swap');
+      body {
+        font-family: 'ZCOOL KuaiLe', cursive, sans-serif;
+        background-color: #f0fdf4;
+        overscroll-behavior: none;
+        user-select: none;
+        -webkit-user-select: none;
+      }
+      /* Custom animations for game feel */
+      @keyframes float {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+        100% { transform: translateY(0px); }
+      }
+      .animate-float {
+        animation: float 3s ease-in-out infinite;
+      }
+      .bubble-pop {
+        animation: pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      }
+      @keyframes pop {
+        0% { transform: scale(0.5); opacity: 0; }
+        100% { transform: scale(1); opacity: 1; }
+      }
+
+      /* Weather: Rain */
+      .rain-drop {
+        position: fixed;
+        background: rgba(255, 255, 255, 0.6);
+        width: 2px;
+        height: 15px;
+        top: -20px;
+        animation: fall linear infinite;
+        pointer-events: none;
+        z-index: 40;
+      }
+      @keyframes fall {
+        to { transform: translateY(100vh); }
+      }
+
+      /* Weather: Leaves */
+      .leaf {
+        position: fixed;
+        width: 15px;
+        height: 15px;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%234ade80'%3E%3Cpath d='M17 8C8 10 5.9 16.17 3.82 21.34 9.17 21.75 16 19 17 8z'/%3E%3C/svg%3E");
+        background-size: cover;
+        top: -20px;
+        animation: swayFall linear infinite;
+        pointer-events: none;
+        z-index: 40;
+        opacity: 0.8;
+      }
+      @keyframes swayFall {
+        0% { transform: translate(0, 0) rotate(0deg); }
+        25% { transform: translate(20px, 25vh) rotate(90deg); }
+        50% { transform: translate(-10px, 50vh) rotate(180deg); }
+        75% { transform: translate(20px, 75vh) rotate(270deg); }
+        100% { transform: translate(0, 100vh) rotate(360deg); }
+      }
+
+      /* Click Sparkles */
+      .click-sparkle {
+        position: fixed;
+        pointer-events: none;
+        animation: sparkle-fade 0.6s ease-out forwards;
+        z-index: 9999;
+      }
+      @keyframes sparkle-fade {
+        0% { transform: scale(0) rotate(0deg); opacity: 1; }
+        50% { transform: scale(1.5) rotate(180deg); opacity: 0.8; }
+        100% { transform: scale(0) rotate(360deg); opacity: 0; }
+      }
+
+      /* Confetti */
+      .confetti {
+        position: fixed;
+        width: 10px;
+        height: 10px;
+        animation: confetti-fall linear forwards;
+        z-index: 100;
+      }
+      @keyframes confetti-fall {
+        0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+        100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react": "https://aistudiocdn.com/react@^19.2.1",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.1/",
+    "react/": "https://aistudiocdn.com/react@^19.2.1/",
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.32.0",
+    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.556.0"
+  }
+}
+</script>
+</head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
